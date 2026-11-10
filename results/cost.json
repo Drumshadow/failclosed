@@ -1,0 +1,19 @@
+{
+ "logged_usd_by_unit": {
+  "f0": 14.7913,
+  "f2": 16.2453,
+  "f4": 7.8447
+ },
+ "logged_usd_total": 38.8812,
+ "note": "Logged by the OpenRouter proxy from per-response usage; responses without usage count as zero. F5 ran locally on CPU and cost nothing in API fees.",
+ "proxy_calls": {
+  "f0": 12542,
+  "f2": 23354,
+  "f4": 11075
+ },
+ "unmeasured_calls": {
+  "f0": 19,
+  "f2": 15,
+  "f4": 0
+ }
+}

@@ -1,0 +1,35 @@
+# FailClosed fault catalog. Each fault says what breaks, how it is applied, and what a sound control does.
+# adapter: proxy (HTTP fault proxy), wrapper (in-process scanner), sqlite (trigger on the agent store),
+#          file (state file), rust_test (exercised by a unit test in the target's own tree).
+# expected: closed = capability removed, open = capability kept with no warning, depends = the result to measure.
+faults:
+  none: {class: control, adapter: proxy, expected: healthy, params: {}}
+
+  timeout: {class: unavailable, adapter: proxy, expected: closed, params: {hang_s: 30}}
+  refused: {class: unavailable, adapter: proxy, expected: closed, params: {}}
+  http_500: {class: unavailable, adapter: proxy, expected: closed, params: {}}
+  malformed: {class: unavailable, adapter: proxy, expected: closed, params: {}}
+  oversized: {class: unavailable, adapter: proxy, expected: closed, params: {bytes: 32768}}
+
+  always_benign: {class: silently_wrong, adapter: proxy, expected: open, params: {}}
+  stale_verdict: {class: silently_wrong, adapter: proxy, expected: depends, params: {}}
+  stale_clean: {class: silently_wrong, adapter: proxy, expected: open, params: {}}
+  first_window: {class: silently_wrong, adapter: proxy, expected: open, params: {chars: 2000}}
+  inverted_score: {class: silently_wrong, adapter: proxy, expected: open, params: {}}
+
+  slow_valid: {class: timing, adapter: proxy, expected: depends, params: {delay_s: 8}}
+  scoring_window: {class: timing, adapter: proxy, expected: depends, params: {delay_s: 9}}
+  load_amplified: {class: timing, adapter: proxy, expected: depends, params: {base_s: 0.05, per_kchar_s: 1.0, max_s: 25}}
+
+  taint_write_fail:
+    class: state
+    adapter: sqlite
+    expected: closed
+    params: {sql: "CREATE TRIGGER failclosed_taint BEFORE UPDATE ON session BEGIN SELECT RAISE(ABORT, 'failclosed: taint write'); END"}
+  audit_write_fail:
+    class: state
+    adapter: sqlite
+    expected: closed
+    params: {sql: "CREATE TRIGGER failclosed_audit BEFORE INSERT ON audit BEGIN SELECT RAISE(ABORT, 'failclosed: audit write'); END"}
+  corrupt_ledger: {class: state, adapter: file, expected: depends, params: {content: "{corrupt"}}
+  pause_io_error: {class: state, adapter: rust_test, expected: closed, params: {}}

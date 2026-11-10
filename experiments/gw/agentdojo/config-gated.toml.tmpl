@@ -1,0 +1,26 @@
+db_path = "{WORKDIR}/state.db"
+persona_path = "/srv/gateway/persona.md"
+manifest_path = "$HOME/bench/gw/agentdojo/tools.toml"
+manifest_sig_path = "$HOME/bench/gw/agentdojo/tools.toml.sig"
+manifest_pubkey_path = "$HOME/bench/gw/keys/manifest_ed25519.pub"
+age_identity_path = "{WORKDIR}/age_identity"
+secret_store_path = "{WORKDIR}/store.age"
+pause_path = "{WORKDIR}/PAUSE"
+corpus_config_path = "{WORKDIR}/nocorpus.toml"
+[model]
+base = "http://127.0.0.1:8000"
+name = "qwen3.6-35b-a3b"
+[mcp_servers]
+agentdojo = "{MCP_URL}"
+[agent]
+max_tool_rounds = 100
+max_tokens = 16384
+temperature = 0.6
+top_p = 0.95
+thinking = "on"
+
+[detector]
+enabled = true
+url = "http://127.0.0.1:8796"
+timeout_ms = 10000
+mode = "detector_gated_taint"
